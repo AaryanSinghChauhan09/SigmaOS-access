@@ -162,8 +162,11 @@ impl LdapLightweightDirectoryEngine {
         if bind_dn.is_empty() || password.is_empty() {
             return Err("LDAP Error: Invalid bind credentials");
         }
-        self.is_authenticated = true;
-        Ok(true)
+        // This type currently contains only in-memory fixture entries. It
+        // performs no network bind and must never treat nonempty strings as
+        // proof of identity.
+        self.is_authenticated = false;
+        Err("LDAP Error: Network authentication backend is unavailable")
     }
 
     pub fn search_user_by_uid(&self, uid: &str) -> Result<LdapUserEntry, &'static str> {
@@ -554,13 +557,10 @@ mod tests {
     fn test_ldap_directory_engine() {
         let mut ldap =
             LdapLightweightDirectoryEngine::new("ldap://auth.sigmaos.org", "dc=sigmaos,dc=org");
-        let test_pass = std::env::var("SIGMA_TEST_LDAP_PASS")
-            .unwrap_or_else(|_| "auth_token_verified".to_string());
-        assert!(ldap.bind_credentials("admin_dn", &test_pass).is_ok());
-
-        let alice = ldap.search_user_by_uid("alice").unwrap();
-        assert_eq!(alice.uid, "alice");
-        assert!(alice.groups.contains(&"wheel".to_string()));
+        assert!(ldap
+            .bind_credentials("admin_dn", "not-a-real-password")
+            .is_err());
+        assert!(ldap.search_user_by_uid("alice").is_err());
     }
 
     #[test]
