@@ -11,7 +11,6 @@ keywords = ["access", "control", "permissions"]
 categories = ["os"]
 
 [dependencies]
-sigmaos-kernel = { version = "0.1", path = "../SigmaOS-kernel" }
 
 [profile.release]
 opt-level = 3
