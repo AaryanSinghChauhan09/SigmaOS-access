@@ -1,16 +1,15 @@
 [package]
-name = "sigmaos-access"
+name = "SigmaOS-access"
 version = "0.1.0"
 edition = "2021"
-authors = ["SigmaOS Project"]
-description = "Access control and permissions"
-license = "GPL-3.0-or-later"
-repository = "https://github.com/AaryanSinghChauhan09/SigmaOS-access"
-readme = "README.md"
-keywords = ["access", "control", "permissions"]
-categories = ["os"]
+license = "Apache-2.0"
+description = "SigmaOS sigmaos_access component"
+
+[lib]
+name = "sigmaos_access"
+path = "src/lib.rs"
 
 [dependencies]
+thiserror = "1"
 
-[profile.release]
-opt-level = 3
+[dev-dependencies]

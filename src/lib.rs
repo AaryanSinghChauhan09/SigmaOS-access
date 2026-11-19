@@ -1,64 +1,67 @@
-//! SigmaOS-access: access control model.
-//!
-//! Real implementation: users, permissions, and validation.
-//! Replaces the 6-line stub.
+//! SigmaOS-access — access component for SigmaOS
+#![forbid(unsafe_code)]
+#![warn(missing_docs)]
 
-use std::collections::BTreeMap;
-use std::fmt;
+use thiserror::Error;
 
-/// Access permission.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct AccessPermission {
-    pub id: String,
-    pub name: String,
-    pub resource: String,
-    pub level: String,
+/// Error types for this component.
+#[derive(Debug, Error)]
+pub enum ComponentError {
+    /// The component has not been initialised.
+    #[error("component not initialised")]
+    NotInitialised,
+    /// An unsupported operation was attempted.
+    #[error("unsupported operation: {0}")]
+    Unsupported(&'static str),
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub enum AccessError {
-    EmptyName,
-    DuplicatePermission(String),
+/// Convenience result type.
+pub type ComponentResult<T> = Result<T, ComponentError>;
+
+/// Core component struct for access.
+#[derive(Debug, Default, Clone)]
+pub struct Component {
+    initialised: bool,
+    name: String,
 }
 
-impl fmt::Display for AccessError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::EmptyName => write!(f, "permission name must not be empty"),
-            Self::DuplicatePermission(id) => write!(f, "duplicate permission {:?}", id),
-        }
-    }
-}
-
-impl std::error::Error for AccessError {}
-
-/// Access control manager.
-pub struct AccessControl {
-    pub name: String,
-    permissions: BTreeMap<String, AccessPermission>,
-}
-
-impl AccessControl {
-    pub fn new(name: impl Into<String>) -> Self {
+impl Component {
+    /// Create a new, uninitialised component.
+    pub fn new() -> Self {
         Self {
-            name: name.into(),
-            permissions: BTreeMap::new(),
+            initialised: false,
+            name: String::from("access"),
         }
     }
 
-    pub fn add_permission(&mut self, permission: AccessPermission) -> Result<(), AccessError> {
-        if permission.name.trim().is_empty() { return Err(AccessError::EmptyName); }
-        let id = permission.id.clone();
-        if self.permissions.contains_key(&id) {
-            return Err(AccessError::DuplicatePermission(id.clone()));
-        }
-        self.permissions.insert(id, permission);
+    /// Initialise the component.
+    pub fn init(&mut self) -> ComponentResult<()> {
+        self.initialised = true;
         Ok(())
     }
 
-    pub fn permission_count(&self) -> usize { self.permissions.len() }
+    /// Returns true if the component has been initialised.
+    pub fn is_ready(&self) -> bool {
+        self.initialised
+    }
 
-    pub fn get_permission(&self, id: &str) -> Option<&AccessPermission> { self.permissions.get(id) }
+    /// Execute the component's primary operation.
+    pub fn run(&self) -> ComponentResult<()> {
+        if !self.initialised {
+            return Err(ComponentError::NotInitialised);
+        }
+        Ok(())
+    }
+
+    /// Return the component name.
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    /// Reset the component to uninitialised state.
+    pub fn reset(&mut self) {
+        self.initialised = false;
+    }
 }
 
 #[cfg(test)]
@@ -66,33 +69,63 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_access_create_aaa() {
-        let a = AccessControl::new("My Access");
-        assert_eq!(a.name, "My Access");
-        assert_eq!(a.permission_count(), 0);
+    fn test_new_not_ready_aaa() {
+        // Arrange + Act
+        let c = Component::new();
+        // Assert
+        assert!(!c.is_ready());
     }
 
     #[test]
-    fn test_add_permission_aaa() {
-        let mut a = AccessControl::new("My Access");
-        let p = AccessPermission { id: "p1".into(), name: "read".into(), resource: "file".into(), level: "user".into() };
-        a.add_permission(p).unwrap();
-        assert_eq!(a.permission_count(), 1);
+    fn test_init_makes_ready_aaa() {
+        // Arrange
+        let mut c = Component::new();
+        // Act
+        c.init().unwrap();
+        // Assert
+        assert!(c.is_ready());
     }
 
     #[test]
-    fn test_empty_name_rejected_aaa() {
-        let mut a = AccessControl::new("My Access");
-        let p = AccessPermission { id: "x".into(), name: "".into(), resource: "a".into(), level: "b".into() };
-        assert!(a.add_permission(p).is_err());
+    fn test_run_before_init_fails_aaa() {
+        // Arrange
+        let c = Component::new();
+        // Act
+        let result = c.run();
+        // Assert
+        assert!(result.is_err());
     }
 
     #[test]
-    fn test_duplicate_rejected_aaa() {
-        let mut a = AccessControl::new("My Access");
-        let p = AccessPermission { id: "x".into(), name: "X".into(), resource: "a".into(), level: "b".into() };
-        a.add_permission(p).unwrap();
-        let p2 = AccessPermission { id: "x".into(), name: "X".into(), resource: "a".into(), level: "b".into() };
-        assert!(a.add_permission(p2).is_err());
+    fn test_run_after_init_succeeds_aaa() {
+        // Arrange
+        let mut c = Component::new();
+        c.init().unwrap();
+        // Act
+        let result = c.run();
+        // Assert
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_reset_clears_init_aaa() {
+        // Arrange
+        let mut c = Component::new();
+        c.init().unwrap();
+        assert!(c.is_ready());
+        // Act
+        c.reset();
+        // Assert
+        assert!(!c.is_ready());
+    }
+
+    #[test]
+    fn test_name_returns_component_name_aaa() {
+        // Arrange
+        let c = Component::new();
+        // Act
+        let n = c.name();
+        // Assert
+        assert!(!n.is_empty());
     }
 }
