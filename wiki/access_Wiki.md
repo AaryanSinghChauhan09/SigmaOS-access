@@ -1,64 +1,50 @@
-# SigmaOS-access Component Wiki
+# SigmaOS-SigmaOS-access Component Wiki
 
 ## Overview
-SigmaOS-access is a SigmaOS component providing access control and permission primitives for the SigmaOS operating system. It demonstrates the security foundation and permission management system within the SigmaOS ecosystem.
+SigmaOS-SigmaOS-access provides Access control and permission primitives for SigmaOS. for the SigmaOS operating system. It demonstrates the subsystem and integration within the SigmaOS ecosystem, following the principles of clear abstraction and deterministic initialization.
 
 ## Principles
 - Single Responsibility
-- Access Control Primitives
-- Fail-Fast on Permission Errors
-- Deterministic Permission Initialization
-- Clear Abstraction Over Permission APIs
-- Composition over Inheritance for permission modules
+- SigmaOS-access Abstraction
+- Fail-Fast on SigmaOS-access Initialization Errors
+- Deterministic SigmaOS-access Setup
+- Clear Abstraction Over SigmaOS-access APIs
+- Composition over Inheritance for SigmaOS-access extensions
 
 ## Architecture
-SigmaOS-access follows an access control primitives pattern:
-- **Permission Core**: Provides fundamental permission checking and management
-- **Role Management**: Handles role-based access control (RBAC) structures
-- **Resource Access**: Manages read/write/execute permissions on system resources
-- **Audit Logging**: Tracks permission checks and access decisions
+SigmaOS-SigmaOS-access follows a SigmaOS-access pattern:
+- **SigmaOS-access Core**: Provides SigmaOS-access support, SigmaOS-access management, and SigmaOS-access tracking
+- **Management**: Supports SigmaOS-access management, SigmaOS-access configuration, and SigmaOS-access lifecycle
+- **Tracking**: Supports SigmaOS-access status, SigmaOS-access tracking, and SigmaOS-access lifecycle
+- **Error Handling**: Fail-fast on invalid SigmaOS-access configurations or unsupported SigmaOS-access types
 
 ## API
 The component provides the following public APIs:
-- `permission::check(resource, action)` - Check if a permission is granted
-- `permission::grant(resource, role, action)` - Grant a permission
-- `permission::revoke(resource, action)` - Revoke a permission
-- `permission::roles()` - List all defined roles
-- Error types for permission denied or invalid operations
+-  - Manage a SigmaOS-access by given configuration
+-  - Register a SigmaOS-access by given name
+-  - Get SigmaOS-access status and SigmaOS-access availability
+-  - Track SigmaOS-access management and SigmaOS-access tracking
+- Error types for SigmaOS-access failure scenarios or unsupported SigmaOS-access types
 
 ## Test Structure (Arrange-Act-ASSERT)
 All tests follow the AAA pattern:
-1. **Arrange**: Set up test environment with specific permission configuration
-2. **Act**: Execute the code under test (permission checks, role management)
-3. **Assert**: Verify the expected permission results
+1. **Arrange**: Set up test environment with specific SigmaOS-access configuration
+2. **Act**: Execute the code under test (SigmaOS-access init, SigmaOS-access management)
+3. **Assert**: Verify the expected SigmaOS-access results
 
 Example:
-```rust
-#[test]
-fn test_permission_check_aaa() {
-    // Arrange
-    let resource = "file:/etc/passwd";
-    let action = "read";
-    
-    // Act
-    let result = permission::check(resource, action);
-    
-    // Assert
-    assert!(result.is_ok());
-    assert!(result.unwrap().is_granted());
-}
-```
+
 
 ## Development
-- Follows Rust best practices with `#![forbid(unsafe_code)]`
-- Permission initialization is best-effort; gracefully degrades on conflicting policies
-- Comprehensive error types for all permission-related failure scenarios
-- Unit tests provided for permission checks and role management
-- Integration tests for full access control stack with policy engine
+- Follows Rust best practices with 
+- SigmaOS-access initialization is best-effort; gracefully degrades on unsupported configurations
+- Comprehensive error types for all SigmaOS-access failure scenarios
+- Unit tests provided for SigmaOS-access management and configuration
+- Integration tests for full SigmaOS-access system with actual SigmaOS-access integration
 
 ## TODO
-- Add support for RBAC role hierarchy management
-- Expand resource permission enumeration capabilities
-- Add audit logging integration APIs
-- Create integration tests with actual permission policy engine
-- Implement permission inheritance and delegation
+- Add support for additional SigmaOS-access types
+- Expand SigmaOS-access capabilities (SigmaOS-access features, SigmaOS-access configurations, SigmaOS-access tracking)
+- Add lifecycle features (SigmaOS-access tracking, SigmaOS-access lifecycle, SigmaOS-access propagation)
+- Create integration tests with actual SigmaOS-access systems and SigmaOS-access integration
+- Implement SigmaOS-access persistence and SigmaOS-access state management
